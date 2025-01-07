@@ -1,31 +1,19 @@
-import { Header } from './Header';
-import { EntryForm } from './EntryForm';
-import { EntriesList } from './EntriesList';
-import { NoEntries } from './NoEntries';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
-
-type Entry = {
-  id: number;
-  title: string;
-  photoUrl: string;
-  notes: string;
-};
+import { EntriesList } from './EntriesList';
+import { EntryForm } from './EntryForm';
+import { Header } from './Header';
+import { NoEntries } from './NoEntries';
 
 function App() {
-  const [entries, setEntries] = useState<Entry[]>([]);
-
   return (
     <>
       <Routes>
         <Route path="/" element={<Header />}>
-          <Route index element={<EntriesList entries={entries} />} />
+          <Route index element={<EntriesList />} />
 
-          <Route
-            path="entry-form/:id?"
-            element={<EntryForm entries={entries} setEntries={setEntries} />}
-          />
+          <Route path="entry-form/:id" element={<EntryForm />} />
+          <Route path="entry-form" element={<EntryForm />} />
 
           <Route path="*" element={<NoEntries />} />
         </Route>
@@ -35,14 +23,3 @@ function App() {
 }
 
 export default App;
-
-//  <>
-//    <Routes>
-//      <Route path="/" element={<Header />}>
-//        <Route index element={<Dashboard />} />
-//        <Route path="details/:itemId" element={<Details />} />
-//        <Route path="about" element={<About />} />
-//        <Route path="*" element={<NotFound />} />
-//      </Route>
-//    </Routes>
-//  </>;

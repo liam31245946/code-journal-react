@@ -1,85 +1,142 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  readEntry,
+  updateEntry,
+  addEntry,
+  UnsavedEntry,
+  removeEntry,
+} from './data';
 
-type Entry = {
-  id: number;
-  title: string;
-  photoUrl: string;
-  notes: string;
-};
-
-type EntryFormProps = {
-  entries: Entry[];
-  setEntries: React.Dispatch<React.SetStateAction<Entry[]>>;
-};
-
-export function EntryForm({ entries, setEntries }: EntryFormProps) {
-  const { id } = useParams<{ id: string }>();
+export function EntryForm() {
+  const [error, setError] = useState<unknown>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>('');
   const [photoUrl, setPhotoUrl] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
 
+  const entryId = Number(id);
+
   useEffect(() => {
-    if (id) {
-      const editingEntry = entries.find(
-        (entry) => entry.id === parseInt(id, 10)
-      );
-      if (editingEntry) {
-        setTitle(editingEntry.title);
-        setPhotoUrl(editingEntry.photoUrl);
-        setNotes(editingEntry.notes);
+    async function fetchEntry() {
+      if (entryId) {
+        try {
+          const data = await readEntry(entryId);
+          if (data) {
+            setTitle(data.title);
+            setPhotoUrl(data.photoUrl);
+            setNotes(data.notes);
+          } else {
+            setError(`Entry with id ${entryId} not found`);
+          }
+        } catch (error) {
+          setError(error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
       }
     }
-  }, [id, entries]);
-  const handleSubmit = (e: React.FormEvent) => {
+    fetchEntry();
+  }, [entryId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newEntry: Entry = {
-      id: id ? parseInt(id, 10) : Date.now(),
+    const newEntry: UnsavedEntry = {
       title,
       photoUrl,
       notes,
     };
-    if (id) {
-      setEntries((prev) =>
-        prev.map((entry) => (entry.id === parseInt(id, 10) ? newEntry : entry))
-      );
-    } else {
-      setEntries((prev) => [newEntry, ...prev]);
+    console.log(newEntry);
+    try {
+      if (entryId) {
+        await updateEntry({ ...newEntry, entryId });
+      } else {
+        await addEntry(newEntry);
+      }
+      navigate('/');
+    } catch (error) {
+      setError(error);
     }
-    navigate('/entries');
   };
+
+  const handleDelete = async () => {
+    try {
+      await removeEntry(entryId);
+      navigate('/');
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  if (isLoading) {
+    return <div>Loading ...</div>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        Error: {error instanceof Error ? error.message : 'Unknown Error'}
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="title">Title</label>
-      <input
-        id="title"
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-      <label htmlFor="photoUrl">Photo URL</label>
-      <input
-        id="photoUrl"
-        type="url"
-        value={photoUrl}
-        onChange={(e) => setPhotoUrl(e.target.value)}
-        required
-      />
-      <label htmlFor="notes">Notes</label>
-      <textarea
-        id="notes"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        required
-      />
-      <button type="submit">Save</button>
-      {id && (
-        <button type="button" onClick={() => navigate('/entries')}>
-          Cancel
-        </button>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <label htmlFor="photoUrl">Photo URL</label>
+        <input
+          id="photoUrl"
+          type="url"
+          value={photoUrl}
+          onChange={(e) => setPhotoUrl(e.target.value)}
+          required
+        />
+        <label htmlFor="notes">Notes</label>
+        <textarea
+          id="notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          required
+        />
+        <button type="submit">Save</button>
+        {id && (
+          <>
+            <button type="button" onClick={() => navigate('/')}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)} // Show modal
+              style={{ color: 'red' }}>
+              Delete
+            </button>
+          </>
+        )}
+      </form>
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <p>Are you sure you want to delete this entry?</p>
+            <button onClick={handleDelete} style={{ color: 'red' }}>
+              Yes, Delete
+            </button>
+            <button onClick={() => setShowModal(false)}>Cancel</button>
+          </div>
+        </div>
       )}
-    </form>
+    </div>
   );
 }
