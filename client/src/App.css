@@ -1,36 +1,134 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+body {
+  color: black;
+  font-family: 'Open Sans', sans-serif;
+}
+
+header {
+  background-color: #562b81;
+  color: #fff;
+}
+
+nav > span {
+  display: inline-block;
+  padding: 0.5rem 0;
+  margin-right: 1rem;
+}
+
+h1,
+h2 {
+  margin: 0.7rem 0;
+}
+
+h1 {
+  font-family: 'Proza Libre', serif;
+}
+
+img {
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+}
+
+input {
+  height: 30px;
+}
+
+textarea {
+  height: 130px;
+}
+
+button {
+  cursor: pointer;
+  background-color: #562b81;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.7rem;
+  text-transform: uppercase;
+}
+
+.photo-wrapper,
+input,
+textarea {
+  margin-bottom: 1rem;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #562b81;
+}
+
+p {
+  white-space: pre-wrap;
+}
+
+.entries-wrapper > p {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+ul {
+  list-style: none;
+  padding: 0;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+a {
+  text-decoration: none;
+  color: white;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.entries-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+.edit {
+  cursor: pointer;
+  float: right;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+dialog {
+  border-color: transparent;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-actions button:first-child {
+  color: red;
+  text-decoration: underline;
+  background-color: transparent;
+  padding: 0;
+  text-transform: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.cancel-modal {
+  background-color: grey;
+  color: black;
+}
+
+/* @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
@@ -42,4 +140,4 @@
 
 .read-the-docs {
   color: #888;
-}
+} */
