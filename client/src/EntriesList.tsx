@@ -1,28 +1,33 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Entry, readEntries } from './data';
 
-type Entry = {
-  id: number;
-  title: string;
-  photoUrl: string;
-  notes: string;
-};
+export function EntriesList() {
+  const [entries, setEntries] = useState<Entry[]>([]);
 
-type EntryListProps = {
-  entries: Entry[];
-};
+  useEffect(() => {
+    async function fetchEntries() {
+      const data = await readEntries();
 
-export function EntriesList({ entries }: EntryListProps) {
-  const navigate = useNavigate();
+      setEntries(data);
+    }
+    fetchEntries();
+  }, []);
+
   return (
     <ul className="entry-list">
       {entries.map((entry) => (
-        <li key={entry.id}>
+        <li key={entry.entryId}>
           <div>
             <h2>
               {entry.title}{' '}
-              <button onClick={() => navigate(`/entry-form/${entry.id}`)}>
-                Edit
-              </button>
+              <Link to={`/entry-form/${entry.entryId}`}>
+                <button>Edit</button>
+              </Link>
+              <Link to={`/entry-form/${entry.entryId}`} className="nav-item">
+                <button>New</button>
+              </Link>
+              ;
             </h2>
             <img src={entry.photoUrl} alt={entry.title} />
             <p>{entry.notes}</p>
